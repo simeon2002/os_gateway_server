@@ -31,7 +31,7 @@ file_creator : file_creator.c
 #test client
 sensor_node : sensor_node.c lib/libtcpsock.so
 	@echo "$(TITLE_COLOR)\n***** COMPILING sensor_node *****$(NO_COLOR)"
-	gcc -c sensor_node.c -Wall -std=c11 -Werror -o sensor_node.o -fdiagnostics-color=auto
+	gcc -c sensor_node.c -DLOOPS=5 -Wall -std=c11 -Werror -o sensor_node.o -fdiagnostics-color=auto
 	@echo "$(TITLE_COLOR)\n***** LINKING sensor_node *****$(NO_COLOR)"
 	gcc sensor_node.o -ltcpsock -o sensor_node -Wall -L./lib -Wl,-rpath=./lib -fdiagnostics-color=auto
 
@@ -65,3 +65,24 @@ run : sensor_gateway sensor_node
 
 zip:
 	zip lab_final.zip main.c connmgr.c connmgr.h datamgr.c datamgr.h sbuffer.c sbuffer.h sensor_db.c sensor_db.h config.h lib/dplist.c lib/dplist.h lib/tcpsock.c lib/tcpsock.h
+
+#connection manager makes
+run_connectionmgr: connection_mgr.c main.c lib/libtcpsock.so
+	gcc -g -Wall -std=c11 -Werror lib/tcpsock.c connection_mgr.c main.c -o cmgr_test -lpthread
+
+run_server: run_connectionmgr
+	./cmgr_test 2000 5
+runclient1: sensor_node
+	./sensor_node 1 1 127.0.0.1 2000
+
+runclient2: sensor_node
+	./sensor_node 2 1 127.0.0.1 2000
+
+runclient3: sensor_node
+	./sensor_node 3 1 127.0.0.1 2000
+
+runclient4: sensor_node
+	./sensor_node 4 1 127.0.0.1 2000
+
+runclient5: sensor_node
+	./sensor_node 4 1 127.0.0.1 2000
