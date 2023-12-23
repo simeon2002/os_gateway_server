@@ -6,6 +6,9 @@
 #define _SBUFFER_H_
 
 #include "config.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <semaphore.h>
 
 #define SBUFFER_FAILURE -1
 #define SBUFFER_SUCCESS 0

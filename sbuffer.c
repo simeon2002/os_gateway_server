@@ -2,10 +2,7 @@
  * \author {AUTHOR}
  */
 
-#include <stdlib.h>
-#include <stdio.h>
 #include "sbuffer.h"
-#include <semaphore.h>
 
 /**
  * basic node for the buffer, these nodes are linked together to create the buffer
@@ -74,8 +71,6 @@ int sbuffer_remove(sbuffer_t *buffer, sensor_data_t *data) {
         perror("Error occurred during waiting for counting semaphore");
         return SBUFFER_FAILURE;
     }
-    // no data case (not utilized in my code as this is accounted for by waiting semaphore)
-//    if (buffer->head == NULL) return SBUFFER_NO_DATA; // TODO QUESTION: there is not really a need for that one in my case?
     // data removed cases
     if (sem_wait(&rw_mutex) != 0){ // start buffer lock
         perror("Error occurred during waiting for semaphore mutex");

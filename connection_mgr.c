@@ -22,7 +22,7 @@ void *client_handler(tcpsock_t *client) {
 //            printf("sensor id = %" PRIu16 " - temperature = %g - timestamp = %ld\n", data.id, data.value,
 //                    (long int) data.ts);
             sbuffer_insert(shared_buffer, &data);
-            sleep(1);
+//            sleep(1);
         }
 
     } while (result == TCP_NO_ERROR);
@@ -35,6 +35,9 @@ void *client_handler(tcpsock_t *client) {
     if (tcp_close(&client) != TCP_NO_ERROR) {
         fprintf(stderr, "Error closing client socket\n");
     }
+
+    data.id = 0;
+    sbuffer_insert(shared_buffer, &data);
     return 0;
 }
 
@@ -83,5 +86,6 @@ int cmgr_start_server(int argc, char *argv[]) {
             ERROR_HANDLER(1, EXIT_TCP_ERROR, "Error during closing TCP connection.");
         }
         printf("Test server is shutting down\n");
+
         return 0;
     }

@@ -86,4 +86,4 @@ run_client4: sensor_node
 	./sensor_node 4 1 127.0.0.1 2000
 
 run_client5: sensor_node
-	./sensor_node 4 1 127.0.0.1 2000
+	./sensor_node 5 1 127.0.0.1 2000

@@ -32,12 +32,12 @@ void *connection_mgr_routine(void* arguments){
 }
 
 void *data_mgr_routine() {
+    printf("testing data\n");
     do {
-        printf("testing data\n");
         sensor_data_t *sensor_node = (sensor_data_t *) malloc(sizeof(sensor_data_t));
         if (sbuffer_remove(shared_buffer, sensor_node) == SBUFFER_NO_DATA) break;
         printf("Testing out shared buffer:\n");
-        printf("sensor id: %d, %f, %ld", sensor_node->id, sensor_node->value, sensor_node->ts);
+        printf("sensor id: %d, %f, %ld\n", sensor_node->id, sensor_node->value, sensor_node->ts);
     } while (1);
     return NULL;
 }
