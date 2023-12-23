@@ -3,12 +3,12 @@
 //
 
 #include "connection_mgr.h"
-#include <unistd.h>
 
 
 void *client_handler(tcpsock_t *client) {
     int bytes, result;
     sensor_data_t data;
+    data.is_datamgr = false;
 
     do { // reading sensor data
         bytes = sizeof(data.id);
@@ -19,9 +19,16 @@ void *client_handler(tcpsock_t *client) {
         result = tcp_receive(client, (void *) &data.ts, &bytes);
         if ((result == TCP_NO_ERROR) && bytes) {
             // todo: printf to be removed
-//            printf("sensor id = %" PRIu16 " - temperature = %g - timestamp = %ld\n", data.id, data.value,
-//                    (long int) data.ts);
-            sbuffer_insert(shared_buffer, &data);
+            printf("\n\n writing:");
+            printf("sensor id = %" PRIu16 " - temperature = %g - timestamp = %ld\n", data.id, data.value,
+                    (long int) data.ts);
+            fflush(stdout);
+            data.is_datamgr = true;
+//            sleep(1);
+            sbuffer_insert(shared_buffer, &data, false);
+            data.is_datamgr = false;
+            sbuffer_insert(shared_buffer, &data, true);
+
 //            sleep(1);
         }
 
@@ -37,8 +44,13 @@ void *client_handler(tcpsock_t *client) {
     }
 
     data.id = 0;
-    sbuffer_insert(shared_buffer, &data);
-    return 0;
+    data.is_datamgr = false;
+    sbuffer_insert(shared_buffer, &data, false);
+//    sleep(1);
+    data.is_datamgr = true;
+    sbuffer_insert(shared_buffer, &data, true);
+    sleep(1);
+    return NULL;
 }
 
 int cmgr_start_server(int argc, char *argv[]) {
@@ -81,11 +93,10 @@ int cmgr_start_server(int argc, char *argv[]) {
                 ERROR_HANDLER(1, EXIT_THREAD_ERROR, "Error during thread join.");
             }
         }
-
         if (tcp_close(&server) != TCP_NO_ERROR) {
             ERROR_HANDLER(1, EXIT_TCP_ERROR, "Error during closing TCP connection.");
         }
-        printf("Test server is shutting down\n");
+//        printf("Test server is shutting down\n");
 
         return 0;
     }

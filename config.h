@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 #include <time.h>
+#include <stdbool.h>
 
 typedef uint16_t sensor_id_t;
 typedef double sensor_value_t;
@@ -16,6 +17,7 @@ typedef struct {
     sensor_id_t id;
     sensor_value_t value;
     sensor_ts_t ts;
+    bool is_datamgr;            /** a boolean detecting for which manager it is destined*/
 } sensor_data_t;
 
 #endif /* _CONFIG_H_ */

@@ -6,11 +6,9 @@
 // in the .c file of that module and just include the header file in the files that you want to use the global variable basically.
 #include <stdlib.h>
 #include <stdio.h>
-#include <unistd.h>
 #include <pthread.h>
 #include "connection_mgr.h"
 #include "sbuffer.h"
-
 
 
 #define NUM_OF_THREADS 3
@@ -28,22 +26,52 @@ void *connection_mgr_routine(void* arguments){
     int argc = args->argc;
     char **argv = args->argv;
     cmgr_start_server(argc, argv);
+    fprintf(stdout, "closing the connection manager\n");
+    fflush(stdout);
     return NULL;
 }
 
 void *data_mgr_routine() {
     printf("testing data\n");
+    int counter = 0;
+    sensor_data_t *sensor_node = (sensor_data_t *) malloc(sizeof(sensor_data_t));
     do {
-        sensor_data_t *sensor_node = (sensor_data_t *) malloc(sizeof(sensor_data_t));
-        if (sbuffer_remove(shared_buffer, sensor_node) == SBUFFER_NO_DATA) break;
-        printf("Testing out shared buffer:\n");
-        printf("sensor id: %d, %f, %ld\n", sensor_node->id, sensor_node->value, sensor_node->ts);
+        int result;
+        result = sbuffer_remove(shared_buffer, sensor_node, true);
+        if (result == SBUFFER_NO_DATA) break;
+        else if (result == SBUFFER_NO_MATCH) continue;
+        else {
+            printf("DATAMGR:");
+            counter++;
+            printf("counter: %d sensor id: %d, %f, %ld\n", counter, sensor_node->id, sensor_node->value, sensor_node->ts);
+            fflush(stdout);
+        }
+//        sleep(2);
     } while (1);
+    free(sensor_node);
+    printf("closing data manger\n");
     return NULL;
 }
 
 void *storage_mgr_routine() {
+    int count = 0;
     printf("testing storage\n");
+    sensor_data_t *sensor_node = (sensor_data_t *) malloc(sizeof(sensor_data_t));
+    int result;
+    do {
+        result = sbuffer_remove(shared_buffer, sensor_node, false);
+        if ( result == SBUFFER_NO_DATA) break;
+        else if (result == SBUFFER_NO_MATCH) continue;
+        else {
+            printf("STORAGEMGR: ");
+            count++;
+            printf("count %d sensor id: %d, %f, %ld\n", count, sensor_node->id, sensor_node->value, sensor_node->ts);
+            fflush(stdout);
+        }
+//        sleep(2);
+    } while (1);
+    free(sensor_node);
+    printf("closing storage manager\n");
     return NULL;
 }
 
@@ -76,9 +104,11 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    // waiting for threads to finish
     for (int i = 0; i < NUM_OF_THREADS; i++) {
-        if (pthread_join(*(threads+i), NULL) != 0) {
-            ERROR_HANDLER(1, EXIT_THREAD_ERROR, "Error occurred during thread join");
+        if (pthread_join(threads[i], NULL) != 0) {
+            perror("Error joining thread.\n");
+            exit(EXIT_FAILURE);
         }
     }
 

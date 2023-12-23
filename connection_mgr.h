@@ -8,6 +8,7 @@
 #include "config.h"
 #include "lib/tcpsock.h"
 #include "sbuffer.h"
+#include <unistd.h>
 
 #define EXIT_TCP_ERROR 1
 #define EXIT_THREAD_ERROR 2
