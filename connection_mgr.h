@@ -7,6 +7,7 @@
 #include <inttypes.h>
 #include "config.h"
 #include "lib/tcpsock.h"
+#include "sbuffer.h"
 
 #define EXIT_TCP_ERROR 1
 #define EXIT_THREAD_ERROR 2

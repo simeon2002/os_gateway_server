@@ -2,11 +2,16 @@
 // Created by sims0702 on 12/23/23.
 //
 
+// note: to define a global var, define it in the head file of the appropriate module as extern in .h file, then define it
+// in the .c file of that module and just include the header file in the files that you want to use the global variable basically.
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <pthread.h>
 #include "connection_mgr.h"
+#include "sbuffer.h"
+
+
 
 #define NUM_OF_THREADS 3
 #ifndef EXIT_THREAD_ERROR
@@ -27,7 +32,13 @@ void *connection_mgr_routine(void* arguments){
 }
 
 void *data_mgr_routine() {
-    printf("testing data\n");
+    do {
+        printf("testing data\n");
+        sensor_data_t *sensor_node = (sensor_data_t *) malloc(sizeof(sensor_data_t));
+        if (sbuffer_remove(shared_buffer, sensor_node) == SBUFFER_NO_DATA) break;
+        printf("Testing out shared buffer:\n");
+        printf("sensor id: %d, %f, %ld", sensor_node->id, sensor_node->value, sensor_node->ts);
+    } while (1);
     return NULL;
 }
 
@@ -38,12 +49,15 @@ void *storage_mgr_routine() {
 
 
 int main(int argc, char *argv[]) {
+
+    // initializing buffer
+    sbuffer_init(&shared_buffer);
+
+    // creating threads for each manager
     pthread_t threads[NUM_OF_THREADS];
     thread_args *args = (thread_args*)malloc(sizeof(thread_args));
     args->argc = argc;
     args->argv = argv;
-
-
 
     for (int i = 0; i < NUM_OF_THREADS; i++) {
         if (i == 0) {

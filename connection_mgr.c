@@ -3,6 +3,7 @@
 //
 
 #include "connection_mgr.h"
+#include <unistd.h>
 
 
 void *client_handler(tcpsock_t *client) {
@@ -17,8 +18,11 @@ void *client_handler(tcpsock_t *client) {
         bytes = sizeof(data.ts);
         result = tcp_receive(client, (void *) &data.ts, &bytes);
         if ((result == TCP_NO_ERROR) && bytes) {
-            printf("sensor id = %" PRIu16 " - temperature = %g - timestamp = %ld\n", data.id, data.value,
-                    (long int) data.ts);
+            // todo: printf to be removed
+//            printf("sensor id = %" PRIu16 " - temperature = %g - timestamp = %ld\n", data.id, data.value,
+//                    (long int) data.ts);
+            sbuffer_insert(shared_buffer, &data);
+            sleep(1);
         }
 
     } while (result == TCP_NO_ERROR);
