@@ -105,6 +105,7 @@ int sbuffer_remove(sbuffer_t *buffer, sensor_data_t *data, bool is_datamgr) {
         if (data->id == 0) { // checking for end of file marker
             sem_post(&reader_mutex);
             sem_post(&rw_mutex);
+            free(dummy);
             return SBUFFER_NO_DATA;
         }
         free(dummy);

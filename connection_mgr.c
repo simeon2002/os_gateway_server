@@ -3,7 +3,14 @@
 //
 
 #include "connection_mgr.h"
+// global vars
+int conn_counter = 0;
 
+// client args
+typedef struct {
+    tcpsock_t *client;
+    int max_conn;
+} client_args;
 
 void *client_handler(tcpsock_t *client) {
     int bytes, result;
@@ -19,6 +26,7 @@ void *client_handler(tcpsock_t *client) {
         result = tcp_receive(client, (void *) &data.ts, &bytes);
         if ((result == TCP_NO_ERROR) && bytes) {
             // todo: printf to be removed
+            write_to_log_process("Sensor data received from peer");
             printf("\n\n writing:");
             printf("sensor id = %" PRIu16 " - temperature = %g - timestamp = %ld\n", data.id, data.value,
                     (long int) data.ts);
@@ -29,13 +37,14 @@ void *client_handler(tcpsock_t *client) {
             data.is_datamgr = false;
             sbuffer_insert(shared_buffer, &data, true);
 
-//            sleep(1);
         }
 
     } while (result == TCP_NO_ERROR);
 
-    if (result == TCP_CONNECTION_CLOSED)
+    if (result == TCP_CONNECTION_CLOSED) {
         printf("Peer has closed connection\n");
+        write_to_log_process("Peer has closed connection");
+    }
     else
         printf("Error occurred on connection to peer\n");
 
@@ -43,6 +52,7 @@ void *client_handler(tcpsock_t *client) {
         fprintf(stderr, "Error closing client socket\n");
     }
 
+//    if (conn_counter == )
     data.id = 0;
     data.is_datamgr = false;
     sbuffer_insert(shared_buffer, &data, false);
@@ -58,8 +68,6 @@ int cmgr_start_server(int argc, char *argv[]) {
 
         /*server socket creation*/
         tcpsock_t *server, *client;
-        int conn_counter = 0;
-
         if(argc < 3) {
             printf("Please provide the right arguments: first the port, then the max nb of clients");
             return -1;
@@ -71,6 +79,7 @@ int cmgr_start_server(int argc, char *argv[]) {
         if (tcp_passive_open(&server, PORT) != TCP_NO_ERROR) {
             ERROR_HANDLER(1, EXIT_TCP_ERROR, "Error during socket creation of server");
         }
+    write_to_log_process("Server is started");
 
         /*thread creation for each client*/
         pthread_t thread_ids[MAX_CONN];
@@ -80,6 +89,7 @@ int cmgr_start_server(int argc, char *argv[]) {
                 ERROR_HANDLER(1, EXIT_TCP_ERROR, "error client listening: either, the port isn't correctly assigned, malloc error or socket operation error");
             }
             printf("Incoming client connection\n");
+            write_to_log_process("Incoming client connection");
 
             if (pthread_create(thread_ids + conn_counter, NULL, (void*)client_handler, client) != 0) {
                 ERROR_HANDLER(1, EXIT_THREAD_ERROR, "Error during thread creation for client.");
@@ -96,7 +106,8 @@ int cmgr_start_server(int argc, char *argv[]) {
         if (tcp_close(&server) != TCP_NO_ERROR) {
             ERROR_HANDLER(1, EXIT_TCP_ERROR, "Error during closing TCP connection.");
         }
-//        printf("Test server is shutting down\n");
+        printf("Test server is shutting down\n");
+         write_to_log_process("Shutting down of server");
 
         return 0;
     }

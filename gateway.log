@@ -1,0 +1,10 @@
+0 - Sun Dec 24 16:43:20 2023 - Server is started
+1 - Sun Dec 24 16:43:27 2023 - Incoming client connection
+2 - Sun Dec 24 16:43:27 2023 - Sensor data received from peer
+3 - Sun Dec 24 16:43:27 2023 - Incoming client connection
+4 - Sun Dec 24 16:43:27 2023 - Sensor data received from peer
+5 - Sun Dec 24 16:43:28 2023 - Sensor data received from peer
+6 - Sun Dec 24 16:43:28 2023 - Sensor data received from peer
+7 - Sun Dec 24 16:43:29 2023 - Peer has closed connection
+8 - Sun Dec 24 16:43:29 2023 - Peer has closed connection
+9 - Sun Dec 24 16:43:30 2023 - Shutting down of server

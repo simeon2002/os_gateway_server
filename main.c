@@ -9,6 +9,7 @@
 #include <pthread.h>
 #include "connection_mgr.h"
 #include "sbuffer.h"
+#include "logger.h"
 
 
 #define NUM_OF_THREADS 3
@@ -77,7 +78,8 @@ void *storage_mgr_routine() {
 
 
 int main(int argc, char *argv[]) {
-
+    // creation log process
+    create_log_process();
     // initializing buffer
     sbuffer_init(&shared_buffer);
 
@@ -113,5 +115,8 @@ int main(int argc, char *argv[]) {
     }
 
     free(args);
+    sbuffer_free(&shared_buffer);
+    // ending log process.
+    end_log_process();
     return 0;
 }
