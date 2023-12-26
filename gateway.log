@@ -1,10 +1,10 @@
-0 - Sun Dec 24 16:43:20 2023 - Server is started
-1 - Sun Dec 24 16:43:27 2023 - Incoming client connection
-2 - Sun Dec 24 16:43:27 2023 - Sensor data received from peer
-3 - Sun Dec 24 16:43:27 2023 - Incoming client connection
-4 - Sun Dec 24 16:43:27 2023 - Sensor data received from peer
-5 - Sun Dec 24 16:43:28 2023 - Sensor data received from peer
-6 - Sun Dec 24 16:43:28 2023 - Sensor data received from peer
-7 - Sun Dec 24 16:43:29 2023 - Peer has closed connection
-8 - Sun Dec 24 16:43:29 2023 - Peer has closed connection
-9 - Sun Dec 24 16:43:30 2023 - Shutting down of server
+0 - Tue Dec 26 20:24:13 2023 - Server is started
+1 - Tue Dec 26 20:24:21 2023 - Incoming client connection
+2 - Tue Dec 26 20:24:21 2023 - Sensor data received from peer
+3 - Tue Dec 26 20:24:22 2023 - Sensor data received from peer
+4 - Tue Dec 26 20:24:23 2023 - Peer has closed connection
+5 - Tue Dec 26 20:24:25 2023 - Incoming client connection
+6 - Tue Dec 26 20:24:25 2023 - Sensor data received from peer
+7 - Tue Dec 26 20:24:26 2023 - Sensor data received from peer
+8 - Tue Dec 26 20:24:27 2023 - Peer has closed connection
+9 - Tue Dec 26 20:24:28 2023 - Shutting down of server

@@ -25,7 +25,7 @@
                     } while(0)
 #endif
 
-//typedef
+typedef struct client_args client_args_t;
 void *client_handler(tcpsock_t *client);
 
 

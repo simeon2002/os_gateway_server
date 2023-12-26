@@ -7,7 +7,7 @@
 int conn_counter = 0;
 
 // client args
-typedef struct {
+typedef struct client_args {
     tcpsock_t *client;
     int max_conn;
 } client_args;
