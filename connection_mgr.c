@@ -12,8 +12,10 @@ typedef struct client_args {
     int max_conn;
 } client_args;
 
-void *client_handler(tcpsock_t *client) {
+void *client_handler(client_args_t *args) {
     int bytes, result;
+    tcpsock_t *client;
+    client = args->client;
     sensor_data_t data;
     data.is_datamgr = false;
 
@@ -52,14 +54,15 @@ void *client_handler(tcpsock_t *client) {
         fprintf(stderr, "Error closing client socket\n");
     }
 
-//    if (conn_counter == )
-    data.id = 0;
-    data.is_datamgr = false;
-    sbuffer_insert(shared_buffer, &data, false);
-//    sleep(1);
-    data.is_datamgr = true;
-    sbuffer_insert(shared_buffer, &data, true);
-    sleep(1);
+    if (conn_counter == args->max_conn) { // only tell buffer to step at last connection.
+        data.id = 0;
+        data.is_datamgr = false;
+        sbuffer_insert(shared_buffer, &data, false);
+    //    sleep(1);
+        data.is_datamgr = true;
+        sbuffer_insert(shared_buffer, &data, true);
+        sleep(1);
+    }
     return NULL;
 }
 
@@ -68,12 +71,13 @@ int cmgr_start_server(int argc, char *argv[]) {
 
         /*server socket creation*/
         tcpsock_t *server, *client;
+        client_args_t *args = (client_args_t*)malloc(sizeof(client_args_t));
         if(argc < 3) {
             printf("Please provide the right arguments: first the port, then the max nb of clients");
             return -1;
         }
-        int MAX_CONN = atoi(argv[2]); // use stroi
-        int PORT = atoi(argv[1]);
+    int MAX_CONN = atoi(argv[2]); // use stroi
+    int PORT = atoi(argv[1]);
 
         printf("Test server is started\n");
         if (tcp_passive_open(&server, PORT) != TCP_NO_ERROR) {
@@ -90,8 +94,10 @@ int cmgr_start_server(int argc, char *argv[]) {
             }
             printf("Incoming client connection\n");
             write_to_log_process("Incoming client connection");
+            args->max_conn = MAX_CONN;
+            args->client = client;
 
-            if (pthread_create(thread_ids + conn_counter, NULL, (void*)client_handler, client) != 0) {
+            if (pthread_create(thread_ids + conn_counter, NULL, (void*)client_handler, args) != 0) {
                 ERROR_HANDLER(1, EXIT_THREAD_ERROR, "Error during thread creation for client.");
             }
             conn_counter++;

@@ -10,6 +10,7 @@
 #include "sbuffer.h"
 #include <unistd.h>
 #include "logger.h"
+#include <time.h>
 
 #define EXIT_TCP_ERROR 1
 #define EXIT_THREAD_ERROR 2
@@ -26,7 +27,7 @@
 #endif
 
 typedef struct client_args client_args_t;
-void *client_handler(tcpsock_t *client);
+void *client_handler(client_args_t *args);
 
 
 int cmgr_start_server(int argc, char** argv);
