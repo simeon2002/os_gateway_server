@@ -35,12 +35,11 @@ void *connection_mgr_routine(void* arguments){
 
 void *data_mgr_routine() {
     printf("testing data\n");
-
+    int counter = 0;
     // room sensor mappings defined
     FILE * map = fopen("room_sensor.map", "r");
     ERROR_HANDLER(map == NULL, 1,  "File couldn't open.");
     datamgr_parse_sensor_mapping(map);
-//    int counter = 0;
     sensor_data_t *sensor_node = (sensor_data_t *) malloc(sizeof(sensor_data_t));
 
     // processing read data from buffer
@@ -51,14 +50,14 @@ void *data_mgr_routine() {
         if (result == SBUFFER_NO_DATA) break;
         else if (result == SBUFFER_NO_MATCH) continue;
         else {
-//            printf("DATAMGR:");
-//            counter++;
-//            printf("counter: %d sensor id: %d, %f, %ld\n", counter, sensor_node->id, sensor_node->value, sensor_node->ts);
-//            fflush(stdout);
+            printf("DATAMGR:");
+            counter++;
+            printf("counter: %d sensor id: %d, %f, %ld\n", counter, sensor_node->id, sensor_node->value, sensor_node->ts);
+            fflush(stdout);
+            /*updating sensor_nodes based on data received from sbuffer*/
+            datamgr_update_sensor_data(sensor_node);
         }
 
-        /*updating sensor_nodes based on data received from sbuffer*/
-        datamgr_update_sensor_data(sensor_node);
     } while (1);
     free(sensor_node);
     datamgr_free();
@@ -68,7 +67,7 @@ void *data_mgr_routine() {
 }
 
 void *storage_mgr_routine() {
-    int count = 0;
+//    int count = 0;
     printf("testing storage\n");
     sensor_data_t *sensor_node = (sensor_data_t *) malloc(sizeof(sensor_data_t));
     int result;
@@ -77,10 +76,10 @@ void *storage_mgr_routine() {
         if ( result == SBUFFER_NO_DATA) break;
         else if (result == SBUFFER_NO_MATCH) continue;
         else {
-            printf("STORAGEMGR: ");
-            count++;
-            printf("count %d sensor id: %d, %f, %ld\n", count, sensor_node->id, sensor_node->value, sensor_node->ts);
-            fflush(stdout);
+//            printf("STORAGEMGR: ");
+//            count++;
+//            printf("count %d sensor id: %d, %f, %ld\n", count, sensor_node->id, sensor_node->value, sensor_node->ts);
+//            fflush(stdout);
         }
 //        sleep(2);
     } while (1);

@@ -73,7 +73,6 @@ void datamgr_parse_sensor_mapping(FILE *fp_sensor_map) {
     ERROR_HANDLER(dpl_get_element_at_index(sensor_list, 0) == NULL, 1, "The sensor list is empty, "
                                                                        "please add sensor_room mappings before continuing.");
 
-    /* initializing data_avg_temp with NAN values */
     sensor_element_t *sensor_node;
     for (int i = 0; i < dpl_size(sensor_list); ++i) {
         sensor_node = (sensor_element_t*)dpl_get_element_at_index(sensor_list, i); // no copy returned
@@ -98,39 +97,43 @@ void datamgr_update_sensor_data(sensor_data_t *sensor_data) {
     ERROR_HANDLER(num_of_sensors == -1, 1, "No sensor are present at this point of time.");
 
     // sensor data from shared buffer
-        sensor_id_t sensor_id = sensor_data->id;
-        sensor_value_t sensor_value = sensor_data->value;
-        sensor_ts_t sensor_ts = sensor_data->ts;
+    sensor_id_t sensor_id = sensor_data->id;
+    sensor_value_t sensor_value = sensor_data->value;
+    sensor_ts_t sensor_ts = sensor_data->ts;
 
-    // processing sensor data
+    // checking invalid sensor id
+    if (datamgr_is_invalid_sensor(sensor_id)) {
+        write_to_log_process("Received sensor data with invalid node ID %d. Connection will be closed shortly..", sensor_id);
+        return;
+    }
+
+    // processing sensor data and determine whether room is too hot or too cold.
     for (int i = 0; i < num_of_sensors; i++) {
         sensor_element_t* sensor_node = (sensor_element_t*) dpl_get_element_at_index(sensor_list, i);
         if (sensor_node->sensor_id == sensor_id) {
             sensor_node->last_timestamp = sensor_ts;
-            if (sensor_node->temp_count == RUNNING_AVG_LENGTH) {
+            if (sensor_node->temp_count == RUNNING_AVG_LENGTH - 1) {
                 sensor_value_t old_running_avg = sensor_node->running_avg;
                 sensor_node->running_avg = old_running_avg + (sensor_value - old_running_avg) / RUNNING_AVG_LENGTH;
-                datamgr_avg_temp_logging(sensor_node->running_avg);
-                printf("Average for sensor_id: %d is: %f", sensor_id, datamgr_get_avg(sensor_node->sensor_id));
-                printf(" and the last timestamp is: %ld\n", datamgr_get_last_modified(sensor_id));
+                // logging only starts after having 5 values to determine avg temp.
+                datamgr_avg_temp_logging(sensor_node->room_id, sensor_node->sensor_id, sensor_node->running_avg);
+                sensor_ts_t last_ts = datamgr_get_last_modified(sensor_id);
+                printf(" and the last time is: %ld %s\n", last_ts, ctime(&last_ts));
             } else { // if count not yet reached.
                 sensor_node->temp_count++;
                 sensor_node->sum += sensor_value;
                 sensor_node->running_avg = 1.0* sensor_node->sum / sensor_node->temp_count;
             }
-                // todo: add max temp and min temp too hold and too cold messages.
             }
         }
 }
 
-void datamgr_avg_temp_logging(sensor_value_t avg_temp){
+void datamgr_avg_temp_logging(int room_id, int sensor_id, sensor_value_t avg_temp){
     if (avg_temp > SET_MAX_TEMP) {
-        fprintf(stderr, "The room is too hot.\n");
-        write_to_log_process("The room is too hot.");
+        write_to_log_process("Room %d using sensor node %d is too hot.(avg temp = %.2f)", room_id, sensor_id, avg_temp);
     }
     else if (avg_temp < SET_MIN_TEMP) {
-        fprintf(stderr, "The room is too cold.\n");
-        write_to_log_process("The room is too cold.");
+        write_to_log_process("Room %d using sensor node %d is too cold.(avg temp = %.2f)", room_id, sensor_id, avg_temp);
     }
 }
 void datamgr_free() {
@@ -160,7 +163,7 @@ sensor_value_t datamgr_get_avg(sensor_id_t sensor_id) {
         ERROR_HANDLER(i == dpl_size(sensor_list) - 1, 1, "Sensor id doesn't exist.");
     }
 
-    if (sensor->temp_count != RUNNING_AVG_LENGTH) { // checking only the last value is enough!
+    if (sensor->temp_count != RUNNING_AVG_LENGTH - 1) { // checking only the last value is enough!
         return 0;
     } else {
         return sensor->running_avg;
@@ -188,4 +191,13 @@ time_t datamgr_get_last_modified(sensor_id_t sensor_id) {
 
 int datamgr_get_total_sensors() {
     return dpl_size(sensor_list);
+}
+
+bool datamgr_is_invalid_sensor(sensor_id_t sensor_id) {
+    sensor_element_t *sensor_node;
+    for (int i = 0; i < dpl_size(sensor_list); i++) {
+        sensor_node = (sensor_element_t*) dpl_get_element_at_index(sensor_list, i);
+        if (sensor_id == sensor_node->sensor_id) return false;
+    }
+    return true;
 }

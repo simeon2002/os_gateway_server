@@ -14,45 +14,54 @@ void *client_handler(tcpsock_t *client) {
     sensor_data_t data;
     data.is_datamgr = false;
     int timeout_flag = 0;
-
+    int invalid_sensor_flag = 0;
+    int counter = 0; // used to display opening connection log msg.
     do { // reading sensor data
-        time_t ts_recieve_start = time(NULL);
+        time_t ts_receive_start = time(NULL);
         bytes = sizeof(data.id);
         result = tcp_receive(client, (void *) &data.id, &bytes);
+        if (counter == 0) { // log message for new opened connection
+            write_to_log_process("Sensor node %d has opened a new connection", data.id);
+            counter++;
+        }
         bytes = sizeof(data.value);
         result = tcp_receive(client, (void *) &data.value, &bytes);
         bytes = sizeof(data.ts);
         result = tcp_receive(client, (void *) &data.ts, &bytes);
+
+        // timeout break
         time_t ts_receive_end = time(NULL);
-        if (ts_receive_end - ts_recieve_start > TIMEOUT){
+        if (ts_receive_end - ts_receive_start > TIMEOUT){
             timeout_flag = 1;
         }
 
+        if (counter == 2 && datamgr_is_invalid_sensor(data.id)) {// after 5 counts, invalid sensor will be closed.
+            invalid_sensor_flag = 1;
+        }
 
         if ((result == TCP_NO_ERROR) && bytes && !timeout_flag) {
-            // todo: printf to be removed
-            write_to_log_process("Sensor data received from peer");
-//            printf("\n\n writing:");
-//            printf("sensor id = %" PRIu16 " - temperature = %g - timestamp = %ld\n", data.id, data.value,
-//                    (long int) data.ts);
+            write_to_log_process("Sensor data received from sensor node %d", data.id);
             fflush(stdout);
             data.is_datamgr = true;
-//            sleep(1);
             sbuffer_insert(shared_buffer, &data, false);
             data.is_datamgr = false;
             sbuffer_insert(shared_buffer, &data, true);
+            counter++;
         }
-
-    } while (result == TCP_NO_ERROR && !timeout_flag);
+    } while (result == TCP_NO_ERROR && !timeout_flag && !invalid_sensor_flag);
 
     if (result == TCP_CONNECTION_CLOSED) {
         printf("Peer has closed connection\n");
-        write_to_log_process("Peer has closed connection");
+        write_to_log_process("Sensor node %d has closed the connection", data.id);
     }
     else if (timeout_flag) {
         printf("Timeout occurred, closing connection.\n");
-        write_to_log_process("Timeout occurred, closing connection.\n");
-} else {
+        write_to_log_process("Timeout occurred, closing connection with sensor node %d.", data.id);
+}  else if (invalid_sensor_flag) {
+        write_to_log_process("Invalid sensor id, closing connection with sensor node %d,", data.id);
+    }
+
+    else {
         printf("Error occurred on connection to peer\n");
     }
 

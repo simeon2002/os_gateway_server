@@ -3,6 +3,7 @@
 //
 
 #include "logger.h"
+#include <stdarg.h>
 // only write_to_log_process will have a returning value.
 //TODO: add error handler function like in plab1
 
@@ -94,16 +95,46 @@ int create_log_process() {
     return EXIT_SUCCESS;
 }
 
-int write_to_log_process(char *msg) {
+int write_to_log_process(const char *format, ...) {
     pthread_mutex_lock(&logger_mutex);
-    size_t msg_length = strlen(msg) + 1;
-    write(fd[1], &msg_length, sizeof(size_t)); // writing the length to be written.
-    if (write(fd[1], msg, strlen(msg) + 1) == -1) {  // writing the message based on the length to be written. (includes \0)
-        perror("Error occurred during writing to pipe");
-        pthread_mutex_unlock(&logger_mutex);
+    va_list args;
+    va_start(args, format);
+
+    // Determine the length of the formatted message
+    size_t msg_length = vsnprintf(NULL, 0, format, args) + 1;
+
+    // Allocate memory for the formatted message
+    char *formatted_msg = (char*)malloc(msg_length);
+    if (formatted_msg == NULL) {
+        perror("Memory allocation error");
+        va_end(args);
         end_log_process();
-        return PIPE_WRITING_ERROR; // TODO: Note the writing process WILL NOT BE terminated!!! very important to take into account!
+        pthread_mutex_unlock(&logger_mutex);
+        return MEMORY_ALLOCATION_ERROR;
     }
+
+    // Reset the va_list to the beginning
+    va_end(args);
+    va_start(args, format);
+
+    // Format the message using the va_list
+    vsnprintf(formatted_msg, msg_length, format, args);
+
+    // writing length to pipe.
+    write(fd[1], &msg_length, sizeof(size_t));
+
+    // writing formatted message to pipe.
+    if (write(fd[1], formatted_msg, msg_length) == -1) {
+        perror("Error occurred during writing to pipe");
+        free(formatted_msg);
+        end_log_process();
+        va_end(args);
+        pthread_mutex_unlock(&logger_mutex);
+        return PIPE_WRITING_ERROR;
+    }
+
+    free(formatted_msg);
+    va_end(args);
     pthread_mutex_unlock(&logger_mutex);
     return EXIT_SUCCESS;
 }

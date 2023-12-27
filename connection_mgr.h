@@ -12,6 +12,7 @@
 #include "logger.h"
 #include <time.h>
 #include <signal.h>
+#include "data_mgr.h"
 
 
 #define EXIT_TCP_ERROR 1

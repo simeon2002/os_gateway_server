@@ -30,6 +30,7 @@
 #define PIPE_READING_ERROR 6
 #define PIPE_WRITING_ERROR 7
 #define MUTEX_ERROR 8
+#define MEMORY_ALLOCATION_ERROR 9
 
 /*
  * Use ERROR_HANDLER() for handling memory allocation problems, invalid sensor IDs, non-existing files, etc.
@@ -47,7 +48,7 @@
  * \param msg The message to be written.
  * \return Status code.
  */
-int write_to_log_process(char *msg);
+int write_to_log_process(const char* format, ...);
 
 /**
  * \brief Create the log process.
