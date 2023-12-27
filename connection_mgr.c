@@ -3,30 +3,33 @@
 //
 
 #include "connection_mgr.h"
+
+
 // global vars
 int conn_counter = 0;
+int MAX_CONN;
 
-// client args
-typedef struct client_args {
-    tcpsock_t *client;
-    int max_conn;
-} client_args;
-
-void *client_handler(client_args_t *args) {
+void *client_handler(tcpsock_t *client) {
     int bytes, result;
-    tcpsock_t *client;
-    client = args->client;
     sensor_data_t data;
     data.is_datamgr = false;
+    int timeout_flag = 0;
 
     do { // reading sensor data
+        time_t ts_recieve_start = time(NULL);
         bytes = sizeof(data.id);
         result = tcp_receive(client, (void *) &data.id, &bytes);
         bytes = sizeof(data.value);
         result = tcp_receive(client, (void *) &data.value, &bytes);
         bytes = sizeof(data.ts);
         result = tcp_receive(client, (void *) &data.ts, &bytes);
-        if ((result == TCP_NO_ERROR) && bytes) {
+        time_t ts_receive_end = time(NULL);
+        if (ts_receive_end - ts_recieve_start > TIMEOUT){
+            timeout_flag = 1;
+        }
+
+
+        if ((result == TCP_NO_ERROR) && bytes && !timeout_flag) {
             // todo: printf to be removed
             write_to_log_process("Sensor data received from peer");
             printf("\n\n writing:");
@@ -38,23 +41,26 @@ void *client_handler(client_args_t *args) {
             sbuffer_insert(shared_buffer, &data, false);
             data.is_datamgr = false;
             sbuffer_insert(shared_buffer, &data, true);
-
         }
 
-    } while (result == TCP_NO_ERROR);
+    } while (result == TCP_NO_ERROR && !timeout_flag);
 
     if (result == TCP_CONNECTION_CLOSED) {
         printf("Peer has closed connection\n");
         write_to_log_process("Peer has closed connection");
     }
-    else
+    else if (timeout_flag) {
+        printf("Timeout occurred, closing connection.\n");
+        write_to_log_process("Timeout occurred, closing connection.\n");
+} else {
         printf("Error occurred on connection to peer\n");
+    }
 
     if (tcp_close(&client) != TCP_NO_ERROR) {
         fprintf(stderr, "Error closing client socket\n");
     }
 
-    if (conn_counter == args->max_conn) { // only tell buffer to step at last connection.
+    if (conn_counter == MAX_CONN) { // only tell buffer to step at last connection.
         data.id = 0;
         data.is_datamgr = false;
         sbuffer_insert(shared_buffer, &data, false);
@@ -71,12 +77,11 @@ int cmgr_start_server(int argc, char *argv[]) {
 
         /*server socket creation*/
         tcpsock_t *server, *client;
-        client_args_t *args = (client_args_t*)malloc(sizeof(client_args_t));
         if(argc < 3) {
             printf("Please provide the right arguments: first the port, then the max nb of clients");
             return -1;
         }
-    int MAX_CONN = atoi(argv[2]); // use stroi
+    MAX_CONN = atoi(argv[2]); // use stroi
     int PORT = atoi(argv[1]);
 
         printf("Test server is started\n");
@@ -88,16 +93,14 @@ int cmgr_start_server(int argc, char *argv[]) {
         /*thread creation for each client*/
         pthread_t thread_ids[MAX_CONN];
 
-        do {
+    do {
             if (tcp_wait_for_connection(server, &client) != TCP_NO_ERROR) {
                 ERROR_HANDLER(1, EXIT_TCP_ERROR, "error client listening: either, the port isn't correctly assigned, malloc error or socket operation error");
             }
             printf("Incoming client connection\n");
             write_to_log_process("Incoming client connection");
-            args->max_conn = MAX_CONN;
-            args->client = client;
 
-            if (pthread_create(thread_ids + conn_counter, NULL, (void*)client_handler, args) != 0) {
+            if (pthread_create(thread_ids + conn_counter, NULL, (void*)client_handler, client) != 0) {
                 ERROR_HANDLER(1, EXIT_THREAD_ERROR, "Error during thread creation for client.");
             }
             conn_counter++;

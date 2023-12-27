@@ -11,9 +11,15 @@
 #include <unistd.h>
 #include "logger.h"
 #include <time.h>
+#include <signal.h>
+
 
 #define EXIT_TCP_ERROR 1
 #define EXIT_THREAD_ERROR 2
+#ifndef TIMEOUT
+#define TIMEOUT 20
+#endif
+
 /*
  * Use ERROR_HANDLER() for handling memory allocation problems, invalid sensor IDs, non-existing files, etc.
  */
@@ -26,8 +32,9 @@
                     } while(0)
 #endif
 
-typedef struct client_args client_args_t;
-void *client_handler(client_args_t *args);
+
+
+void *client_handler(tcpsock_t *client);
 
 
 int cmgr_start_server(int argc, char** argv);
