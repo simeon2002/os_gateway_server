@@ -10,6 +10,7 @@
 #include "connection_mgr.h"
 #include "sbuffer.h"
 #include "logger.h"
+#include "data_mgr.h"
 
 
 #define NUM_OF_THREADS 3
@@ -34,22 +35,34 @@ void *connection_mgr_routine(void* arguments){
 
 void *data_mgr_routine() {
     printf("testing data\n");
-    int counter = 0;
+
+    // room sensor mappings defined
+    FILE * map = fopen("room_sensor.map", "r");
+    ERROR_HANDLER(map == NULL, 1,  "File couldn't open.");
+    datamgr_parse_sensor_mapping(map);
+//    int counter = 0;
     sensor_data_t *sensor_node = (sensor_data_t *) malloc(sizeof(sensor_data_t));
+
+    // processing read data from buffer
     do {
+        /*displaying sbuffer sensor data*/
         int result;
         result = sbuffer_remove(shared_buffer, sensor_node, true);
         if (result == SBUFFER_NO_DATA) break;
         else if (result == SBUFFER_NO_MATCH) continue;
         else {
-            printf("DATAMGR:");
-            counter++;
-            printf("counter: %d sensor id: %d, %f, %ld\n", counter, sensor_node->id, sensor_node->value, sensor_node->ts);
-            fflush(stdout);
+//            printf("DATAMGR:");
+//            counter++;
+//            printf("counter: %d sensor id: %d, %f, %ld\n", counter, sensor_node->id, sensor_node->value, sensor_node->ts);
+//            fflush(stdout);
         }
-//        sleep(2);
+
+        /*updating sensor_nodes based on data received from sbuffer*/
+        datamgr_update_sensor_data(sensor_node);
     } while (1);
     free(sensor_node);
+    datamgr_free();
+    fclose(map);
     printf("closing data manger\n");
     return NULL;
 }

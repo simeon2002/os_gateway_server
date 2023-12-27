@@ -29,11 +29,23 @@ file_creator : file_creator.c
 	gcc file_creator.c -o file_creator -Wall -fdiagnostics-color=auto
 
 #test client
-sensor_node : sensor_node.c lib/libtcpsock.so
+sensor_node1 : sensor_node.c lib/libtcpsock.so
 	@echo "$(TITLE_COLOR)\n***** COMPILING sensor_node *****$(NO_COLOR)"
-	gcc -c sensor_node.c -DLOOPS=4 -Wall -std=c11 -Werror -o sensor_node.o -fdiagnostics-color=auto
+	gcc -c sensor_node.c -DLOOPS=50 -Wall -std=c11 -Werror -o sensor_node1.o -fdiagnostics-color=auto
 	@echo "$(TITLE_COLOR)\n***** LINKING sensor_node *****$(NO_COLOR)"
-	gcc sensor_node.o -ltcpsock -o sensor_node -Wall -L./lib -Wl,-rpath=./lib -fdiagnostics-color=auto
+	gcc sensor_node1.o -ltcpsock -o sensor_node1 -Wall -L./lib -Wl,-rpath=./lib -fdiagnostics-color=auto
+
+sensor_node2 : sensor_node.c lib/libtcpsock.so
+	@echo "$(TITLE_COLOR)\n***** COMPILING sensor_node *****$(NO_COLOR)"
+	gcc -c sensor_node.c -DLOOPS=50 -Wall -std=c11 -Werror -o sensor_node2.o -fdiagnostics-color=auto
+	@echo "$(TITLE_COLOR)\n***** LINKING sensor_node *****$(NO_COLOR)"
+	gcc sensor_node2.o -ltcpsock -o sensor_node2 -Wall -L./lib -Wl,-rpath=./lib -fdiagnostics-color=auto
+
+sensor_node3 : sensor_node.c lib/libtcpsock.so
+	@echo "$(TITLE_COLOR)\n***** COMPILING sensor_node *****$(NO_COLOR)"
+	gcc -c sensor_node.c -DLOOPS=50 -Wall -std=c11 -Werror -o sensor_node3.o -fdiagnostics-color=auto
+	@echo "$(TITLE_COLOR)\n***** LINKING sensor_node *****$(NO_COLOR)"
+	gcc sensor_node3.o -ltcpsock -o sensor_node3 -Wall -L./lib -Wl,-rpath=./lib -fdiagnostics-color=auto
 
 # If you only want to compile one of the libs, this target will match (e.g. make liblist)
 libdplist : lib/libdplist.so
@@ -68,22 +80,22 @@ zip:
 
 #connection manager makes
 run_connectionmgr: lib/libtcpsock.so
-	gcc -g -Wall -std=c11 -Werror lib/tcpsock.c connection_mgr.c main.c sbuffer.c logger.c -o cmgr_test -DTIMEOUT=4 -lpthread
+	gcc -g -Wall -std=c11 -Werror lib/tcpsock.c lib/dplist.c connection_mgr.c main.c sbuffer.c logger.c data_mgr.c -o cmgr_test -DTIMEOUT=4 -DSET_MIN_TEMP=10 -DSET_MAX_TEMP=20.5 -lpthread
 
 run_server: run_connectionmgr
 	./cmgr_test 5678 1
 
-run_client1: sensor_node
-	./sensor_node 1 1 127.0.0.1 5678
+run_client1: sensor_node1
+	./sensor_node1 15 0.5 127.0.0.1 5678
 
-run_client2: sensor_node
-	./sensor_node 2 1 127.0.0.1 5678
+run_client2: sensor_node2
+	./sensor_node2 21 0.5 127.0.0.1 5678
 
-run_client3: sensor_node
-	./sensor_node 3 1 127.0.0.1 5678
+run_client3: sensor_node3
+	./sensor_node3 142 0.5 127.0.0.1 5678
 
-run_client4: sensor_node
-	./sensor_node 4 5 127.0.0.1 5678
+run_client4: sensor_node1
+	./sensor_node1 142 1 127.0.0.1 5678
 
-run_client5: sensor_node
+run_client5: sensor_node1
 	./sensor_node 5 1 127.0.0.1 5678

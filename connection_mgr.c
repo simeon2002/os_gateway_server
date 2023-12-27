@@ -32,9 +32,9 @@ void *client_handler(tcpsock_t *client) {
         if ((result == TCP_NO_ERROR) && bytes && !timeout_flag) {
             // todo: printf to be removed
             write_to_log_process("Sensor data received from peer");
-            printf("\n\n writing:");
-            printf("sensor id = %" PRIu16 " - temperature = %g - timestamp = %ld\n", data.id, data.value,
-                    (long int) data.ts);
+//            printf("\n\n writing:");
+//            printf("sensor id = %" PRIu16 " - temperature = %g - timestamp = %ld\n", data.id, data.value,
+//                    (long int) data.ts);
             fflush(stdout);
             data.is_datamgr = true;
 //            sleep(1);

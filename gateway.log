@@ -1,24 +1,53 @@
-0 - Wed Dec 27 13:55:24 2023 - Server is started
-1 - Wed Dec 27 13:55:26 2023 - Incoming client connection
-2 - Wed Dec 27 13:55:26 2023 - Sensor data received from peer
-3 - Wed Dec 27 13:55:31 2023 - Timeout occurred, closing connection.
-
-4 - Wed Dec 27 13:55:38 2023 - Incoming client connection
-5 - Wed Dec 27 13:55:38 2023 - Sensor data received from peer
-6 - Wed Dec 27 13:55:38 2023 - Incoming client connection
-7 - Wed Dec 27 13:55:38 2023 - Sensor data received from peer
-8 - Wed Dec 27 13:55:38 2023 - Incoming client connection
-9 - Wed Dec 27 13:55:38 2023 - Sensor data received from peer
-10 - Wed Dec 27 13:55:39 2023 - Sensor data received from peer
-11 - Wed Dec 27 13:55:39 2023 - Sensor data received from peer
-12 - Wed Dec 27 13:55:39 2023 - Sensor data received from peer
-13 - Wed Dec 27 13:55:40 2023 - Sensor data received from peer
-14 - Wed Dec 27 13:55:40 2023 - Sensor data received from peer
-15 - Wed Dec 27 13:55:40 2023 - Sensor data received from peer
-16 - Wed Dec 27 13:55:41 2023 - Sensor data received from peer
-17 - Wed Dec 27 13:55:41 2023 - Sensor data received from peer
-18 - Wed Dec 27 13:55:41 2023 - Sensor data received from peer
-19 - Wed Dec 27 13:55:42 2023 - Peer has closed connection
-20 - Wed Dec 27 13:55:42 2023 - Peer has closed connection
-21 - Wed Dec 27 13:55:42 2023 - Peer has closed connection
-22 - Wed Dec 27 13:55:43 2023 - Shutting down of server
+0 - Wed Dec 27 16:10:01 2023 - Server is started
+1 - Wed Dec 27 16:10:02 2023 - Incoming client connection
+2 - Wed Dec 27 16:10:02 2023 - Sensor data received from peer
+3 - Wed Dec 27 16:10:03 2023 - Sensor data received from peer
+4 - Wed Dec 27 16:10:04 2023 - Sensor data received from peer
+5 - Wed Dec 27 16:10:05 2023 - Sensor data received from peer
+6 - Wed Dec 27 16:10:06 2023 - Sensor data received from peer
+7 - Wed Dec 27 16:10:07 2023 - Sensor data received from peer
+8 - Wed Dec 27 16:10:08 2023 - Sensor data received from peer
+9 - Wed Dec 27 16:10:09 2023 - Sensor data received from peer
+10 - Wed Dec 27 16:10:10 2023 - Sensor data received from peer
+11 - Wed Dec 27 16:10:11 2023 - Sensor data received from peer
+12 - Wed Dec 27 16:10:12 2023 - Sensor data received from peer
+13 - Wed Dec 27 16:10:13 2023 - Sensor data received from peer
+14 - Wed Dec 27 16:10:14 2023 - Sensor data received from peer
+15 - Wed Dec 27 16:10:15 2023 - Sensor data received from peer
+16 - Wed Dec 27 16:10:16 2023 - Sensor data received from peer
+17 - Wed Dec 27 16:10:17 2023 - Sensor data received from peer
+18 - Wed Dec 27 16:10:18 2023 - Sensor data received from peer
+19 - Wed Dec 27 16:10:19 2023 - Sensor data received from peer
+20 - Wed Dec 27 16:10:20 2023 - Sensor data received from peer
+21 - Wed Dec 27 16:10:21 2023 - Sensor data received from peer
+22 - Wed Dec 27 16:10:22 2023 - Sensor data received from peer
+23 - Wed Dec 27 16:10:23 2023 - Sensor data received from peer
+24 - Wed Dec 27 16:10:24 2023 - Sensor data received from peer
+25 - Wed Dec 27 16:10:25 2023 - Sensor data received from peer
+26 - Wed Dec 27 16:10:26 2023 - Sensor data received from peer
+27 - Wed Dec 27 16:10:27 2023 - Sensor data received from peer
+28 - Wed Dec 27 16:10:28 2023 - Sensor data received from peer
+29 - Wed Dec 27 16:10:29 2023 - Sensor data received from peer
+30 - Wed Dec 27 16:10:30 2023 - Sensor data received from peer
+31 - Wed Dec 27 16:10:31 2023 - Sensor data received from peer
+32 - Wed Dec 27 16:10:32 2023 - Sensor data received from peer
+33 - Wed Dec 27 16:10:33 2023 - Sensor data received from peer
+34 - Wed Dec 27 16:10:34 2023 - Sensor data received from peer
+35 - Wed Dec 27 16:10:35 2023 - Sensor data received from peer
+36 - Wed Dec 27 16:10:36 2023 - Sensor data received from peer
+37 - Wed Dec 27 16:10:37 2023 - Sensor data received from peer
+38 - Wed Dec 27 16:10:38 2023 - Sensor data received from peer
+39 - Wed Dec 27 16:10:39 2023 - Sensor data received from peer
+40 - Wed Dec 27 16:10:40 2023 - Sensor data received from peer
+41 - Wed Dec 27 16:10:41 2023 - Sensor data received from peer
+42 - Wed Dec 27 16:10:42 2023 - Sensor data received from peer
+43 - Wed Dec 27 16:10:43 2023 - Sensor data received from peer
+44 - Wed Dec 27 16:10:44 2023 - Sensor data received from peer
+45 - Wed Dec 27 16:10:45 2023 - Sensor data received from peer
+46 - Wed Dec 27 16:10:46 2023 - Sensor data received from peer
+47 - Wed Dec 27 16:10:47 2023 - Sensor data received from peer
+48 - Wed Dec 27 16:10:48 2023 - Sensor data received from peer
+49 - Wed Dec 27 16:10:49 2023 - Sensor data received from peer
+50 - Wed Dec 27 16:10:50 2023 - Sensor data received from peer
+51 - Wed Dec 27 16:10:51 2023 - Sensor data received from peer
+52 - Wed Dec 27 16:10:52 2023 - Peer has closed connection
