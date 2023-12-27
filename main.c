@@ -11,7 +11,7 @@
 #include "sbuffer.h"
 #include "logger.h"
 #include "data_mgr.h"
-
+#include "sensor_db.h"
 
 #define NUM_OF_THREADS 3
 #ifndef EXIT_THREAD_ERROR
@@ -67,8 +67,13 @@ void *data_mgr_routine() {
 }
 
 void *storage_mgr_routine() {
-//    int count = 0;
     printf("testing storage\n");
+
+    // opening db file
+    char *filename = "data.csv";
+    FILE* storage_f = storagemgr_open_db(filename, false);
+
+    // shared buffer data retrieval
     sensor_data_t *sensor_node = (sensor_data_t *) malloc(sizeof(sensor_data_t));
     int result;
     do {
@@ -76,14 +81,13 @@ void *storage_mgr_routine() {
         if ( result == SBUFFER_NO_DATA) break;
         else if (result == SBUFFER_NO_MATCH) continue;
         else {
-//            printf("STORAGEMGR: ");
-//            count++;
-//            printf("count %d sensor id: %d, %f, %ld\n", count, sensor_node->id, sensor_node->value, sensor_node->ts);
-//            fflush(stdout);
+            storagemgr_insert_sensor(storage_f, sensor_node->id, sensor_node->value, sensor_node->ts);
         }
-//        sleep(2);
     } while (1);
+
+    // cleaning up resources
     free(sensor_node);
+    storagemgr_close_db(storage_f, filename);
     printf("closing storage manager\n");
     return NULL;
 }

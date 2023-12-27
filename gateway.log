@@ -1,1 +1,59 @@
-0 - Wed Dec 27 21:15:58 2023 - Server is started
+0 - Wed Dec 27 22:35:12 2023 - ---SERVER STARTUP---
+1 - Wed Dec 27 22:35:12 2023 - New DB file data.csv has been created.
+2 - Wed Dec 27 22:35:16 2023 - ---INCOMING CLIENT CONNECTION---
+3 - Wed Dec 27 22:35:16 2023 - Sensor node 15 has opened a new connection
+4 - Wed Dec 27 22:35:16 2023 - Sensor data received from sensor node 15
+5 - Wed Dec 27 22:35:16 2023 - Data insertion from sensor 15.
+6 - Wed Dec 27 22:35:16 2023 - ---INCOMING CLIENT CONNECTION---
+7 - Wed Dec 27 22:35:16 2023 - Sensor node 21 has opened a new connection
+8 - Wed Dec 27 22:35:16 2023 - Sensor data received from sensor node 21
+9 - Wed Dec 27 22:35:16 2023 - Data insertion from sensor 21.
+10 - Wed Dec 27 22:35:16 2023 - ---INCOMING CLIENT CONNECTION---
+11 - Wed Dec 27 22:35:16 2023 - Sensor node 37 has opened a new connection
+12 - Wed Dec 27 22:35:16 2023 - Sensor data received from sensor node 37
+13 - Wed Dec 27 22:35:16 2023 - Data insertion from sensor 37.
+14 - Wed Dec 27 22:35:16 2023 - Sensor data received from sensor node 37
+15 - Wed Dec 27 22:35:16 2023 - Data insertion from sensor 37.
+16 - Wed Dec 27 22:35:16 2023 - Sensor data received from sensor node 37
+17 - Wed Dec 27 22:35:16 2023 - Data insertion from sensor 37.
+18 - Wed Dec 27 22:35:16 2023 - Sensor data received from sensor node 37
+19 - Wed Dec 27 22:35:16 2023 - Data insertion from sensor 37.
+20 - Wed Dec 27 22:35:16 2023 - Sensor node 37 has closed the connection
+21 - Wed Dec 27 22:35:16 2023 - ---INCOMING CLIENT CONNECTION---
+22 - Wed Dec 27 22:35:16 2023 - Sensor node 49 has opened a new connection
+23 - Wed Dec 27 22:35:16 2023 - Sensor data received from sensor node 49
+24 - Wed Dec 27 22:35:16 2023 - Data insertion from sensor 49.
+25 - Wed Dec 27 22:35:16 2023 - ---INCOMING CLIENT CONNECTION---
+26 - Wed Dec 27 22:35:16 2023 - Sensor node 112 has opened a new connection
+27 - Wed Dec 27 22:35:16 2023 - Sensor data received from sensor node 112
+28 - Wed Dec 27 22:35:16 2023 - Data insertion from sensor 112.
+29 - Wed Dec 27 22:35:17 2023 - Sensor data received from sensor node 15
+30 - Wed Dec 27 22:35:17 2023 - Data insertion from sensor 15.
+31 - Wed Dec 27 22:35:17 2023 - Sensor data received from sensor node 21
+32 - Wed Dec 27 22:35:17 2023 - Data insertion from sensor 21.
+33 - Wed Dec 27 22:35:17 2023 - Sensor data received from sensor node 49
+34 - Wed Dec 27 22:35:17 2023 - Data insertion from sensor 49.
+35 - Wed Dec 27 22:35:18 2023 - Sensor data received from sensor node 15
+36 - Wed Dec 27 22:35:18 2023 - Data insertion from sensor 15.
+37 - Wed Dec 27 22:35:18 2023 - Sensor data received from sensor node 21
+38 - Wed Dec 27 22:35:18 2023 - Data insertion from sensor 21.
+39 - Wed Dec 27 22:35:18 2023 - Sensor data received from sensor node 49
+40 - Wed Dec 27 22:35:18 2023 - Data insertion from sensor 49.
+41 - Wed Dec 27 22:35:18 2023 - Sensor data received from sensor node 112
+42 - Wed Dec 27 22:35:18 2023 - Data insertion from sensor 112.
+43 - Wed Dec 27 22:35:19 2023 - Sensor data received from sensor node 15
+44 - Wed Dec 27 22:35:19 2023 - Data insertion from sensor 15.
+45 - Wed Dec 27 22:35:19 2023 - Sensor data received from sensor node 21
+46 - Wed Dec 27 22:35:19 2023 - Data insertion from sensor 21.
+47 - Wed Dec 27 22:35:19 2023 - Sensor data received from sensor node 49
+48 - Wed Dec 27 22:35:19 2023 - Data insertion from sensor 49.
+49 - Wed Dec 27 22:35:20 2023 - Sensor node 15 has closed the connection
+50 - Wed Dec 27 22:35:20 2023 - Sensor node 21 has closed the connection
+51 - Wed Dec 27 22:35:20 2023 - Sensor node 49 has closed the connection
+52 - Wed Dec 27 22:35:20 2023 - Sensor data received from sensor node 112
+53 - Wed Dec 27 22:35:20 2023 - Data insertion from sensor 112.
+54 - Wed Dec 27 22:35:22 2023 - Sensor data received from sensor node 112
+55 - Wed Dec 27 22:35:22 2023 - Data insertion from sensor 112.
+56 - Wed Dec 27 22:35:24 2023 - Sensor node 112 has closed the connection
+57 - Wed Dec 27 22:35:24 2023 - The data.csv DB file has been closed.
+58 - Wed Dec 27 22:35:25 2023 - ---SERVER SHUTDOWN---
