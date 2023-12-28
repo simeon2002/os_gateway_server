@@ -1,24 +1,6 @@
 #define _GNU_SOURCE
 
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <assert.h>
 #include "dplist.h"
-
-
-
-
-/*
-IMPORTANT INFO ABOUT *VOID POINTERS for myself!
- In C, the void * type is used for generic pointers,
- providing flexibility in handling different types of data.
- When list_node->element is assigned memory using malloc, it is assigned as a void * pointer.
- This means it's a pointer that can hold the address of any data type.
-C doesn't require explicit typecasting in this scenario because the void * pointers don't hold
- any type-specific information. It's the responsibility of the programmer to properly interpret the data
- after it's been copied into the memory allocated for list_node->element based on the intended data type.
- */
 
 struct dplist_node {
     dplist_node_t *prev, *next; // link to next els.
@@ -36,7 +18,6 @@ struct dplist {
 };
 
 
-// done, just testing.
 dplist_t *dpl_create(// callback functions
         void *(*element_copy)(void *src_element),
         void (*element_free)(void **element),
@@ -52,7 +33,6 @@ dplist_t *dpl_create(// callback functions
     return list;
 }
 
-//done, just testing.
 void dpl_free(dplist_t **list, bool free_element) {
     if (*list == NULL) return;
     dplist_node_t *current_node = (*list)->head;
@@ -74,7 +54,6 @@ void dpl_free(dplist_t **list, bool free_element) {
     *list = NULL; // also setting pointer to NULL.
 }
 
-// done, just testing.
 dplist_t *dpl_insert_at_index(dplist_t *list, void *element, int index, bool insert_copy) {
     dplist_node_t *ref_at_index, *list_node;
     if (list == NULL) return NULL;
@@ -117,15 +96,15 @@ dplist_t *dpl_insert_at_index(dplist_t *list, void *element, int index, bool ins
     return list;
 }
 
-// done, just testing.
 dplist_t *dpl_remove_at_index(dplist_t *list, int index, bool free_element) {
     dplist_node_t *prev_node, *next_node, *node_at_index;
     if (list == NULL) return NULL;
     else if(list->head == NULL) return list;
     else{
         node_at_index = dpl_get_reference_at_index(list, index);
-        index = dpl_get_index_of_element(list, node_at_index->element);
         assert(node_at_index != NULL);
+        index = dpl_get_index_of_element(list, node_at_index->element);
+        assert(index != -1);
         //CORNER CASE --> INSERTING(it should be removing) ELEMENT AT INDEX 0!
         next_node = node_at_index->next;
         prev_node = node_at_index->prev;
@@ -148,7 +127,6 @@ dplist_t *dpl_remove_at_index(dplist_t *list, int index, bool free_element) {
     return list;
 }
 
-// done, just testing.
 int dpl_size(dplist_t *list) {
     int counter = 0;
     if (list == NULL) return -1;
@@ -163,7 +141,6 @@ int dpl_size(dplist_t *list) {
     return counter;
 }
 
-// done, just testing.
 void *dpl_get_element_at_index(dplist_t *list, int index) {
     if (list == NULL || list->head == NULL) return 0;
     dplist_node_t *temp = dpl_get_reference_at_index(list, index);
@@ -171,7 +148,6 @@ void *dpl_get_element_at_index(dplist_t *list, int index) {
     return temp->element;
 }
 
-// done, just testing.
 int dpl_get_index_of_element(dplist_t *list, void* element) {
     // case 1;
     if (list == NULL) return -1;
@@ -193,7 +169,6 @@ int dpl_get_index_of_element(dplist_t *list, void* element) {
     return -1;
 }
 
-// DONE, JUST TESTING.
 dplist_node_t *dpl_get_reference_at_index(dplist_t *list, int index) {
     dplist_node_t *dummy = NULL;
 
@@ -221,7 +196,6 @@ dplist_node_t *dpl_get_reference_at_index(dplist_t *list, int index) {
     return dummy;
 }
 
-// DOne, just testing.
 void *dpl_get_element_at_reference(dplist_t *list, dplist_node_t *reference) {
     if (list == NULL || list->head == NULL || reference == NULL) 
         return NULL;  // Case 1, 2, or 3: Invalid list, empty list, or null reference

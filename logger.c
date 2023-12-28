@@ -3,16 +3,12 @@
 //
 
 #include "logger.h"
-#include <stdarg.h>
-// only write_to_log_process will have a returning value.
-//TODO: add error handler function like in plab1
 
 // GLOBAL VARS
 int fd[2];
 int i = 0;
 pthread_mutex_t logger_mutex;
 
-/*global variables (for file opening + pipe)*/
 int end_log_process() {
     close(fd[1]);
     int status;
@@ -34,21 +30,22 @@ int end_log_process() {
 int create_log_process() {
     // initializing logger mutex
     if (pthread_mutex_init(&logger_mutex, NULL) != 0) {
-        ERROR_HANDLER(1, MUTEX_ERROR, "Error during creation logger mutex");
+        ERROR_HANDLER(1, EXIT_MUTEX_ERROR, "Error during creation logger mutex");
     }
-    // log file opening
+
     // creation of communication and child process
     if (pipe(fd) == -1) {
         pthread_mutex_destroy(&logger_mutex);
-        ERROR_HANDLER(1, PIPE_CREATION_FAILURE, "Error occurred during pipe creation");
+        ERROR_HANDLER(1, EXIT_PIPE_ERROR, "Error occurred during pipe creation");
     };
+
     int pid = fork();
     // error handle
     if (pid == -1) {
         close(fd[0]);
         close(fd[1]);
         pthread_mutex_destroy(&logger_mutex);
-        ERROR_HANDLER(1, FORK_FAILURE, "fork failed");
+        ERROR_HANDLER(1, EXIT_FORK_FAILURE, "fork failed");
     } else if (pid == 0) { // logging process
         // opening log file.
         close(fd[1]); // closing write_end.
@@ -56,7 +53,7 @@ int create_log_process() {
         if (fp == NULL) {
             close(fd[0]);
             pthread_mutex_destroy(&logger_mutex);
-            ERROR_HANDLER(1, FILE_OPENING_ERROR, "Error occurred during log file opening");
+            ERROR_HANDLER(1, EXIT_FILE_ERROR, "Error occurred during log file opening");
         }
         char received_message[BUFFER_SIZE];
         size_t message_length;
@@ -65,9 +62,9 @@ int create_log_process() {
                 fclose(fp);
                 close(fd[0]);
                 pthread_mutex_destroy(&logger_mutex);
-                ERROR_HANDLER(1, PIPE_READING_ERROR, "An error occurred during reading from pipe");
+                ERROR_HANDLER(1, EXIT_PIPE_ERROR, "An error occurred during reading from pipe");
             }
-            printf("child process reads: %s \n", received_message);
+//            printf("child process reads: %s \n", received_message);
 
             // timestamp creation.
             time_t timer;
@@ -82,7 +79,7 @@ int create_log_process() {
                 fclose(fp);
                 close(fd[0]);
                 pthread_mutex_destroy(&logger_mutex);
-                ERROR_HANDLER(1, LOG_WRITING_ERROR, "Error occurred during writing to log file");
+                ERROR_HANDLER(1, EXIT_LOG_ERROR, "Error occurred during writing to log file");
             }
             fflush(fp); // helps writing to log file without data to be buffered first.
         }
@@ -106,11 +103,10 @@ int write_to_log_process(const char *format, ...) {
     // Allocate memory for the formatted message
     char *formatted_msg = (char*)malloc(msg_length);
     if (formatted_msg == NULL) {
-        perror("Memory allocation error");
         va_end(args);
         end_log_process();
         pthread_mutex_unlock(&logger_mutex);
-        return MEMORY_ALLOCATION_ERROR;
+        ERROR_HANDLER(1, EXIT_MEMORY_ALLOCATION_ERROR, "Error memory couldn't be allocated.");
     }
 
     // Reset the va_list to the beginning
@@ -125,12 +121,11 @@ int write_to_log_process(const char *format, ...) {
 
     // writing formatted message to pipe.
     if (write(fd[1], formatted_msg, msg_length) == -1) {
-        perror("Error occurred during writing to pipe");
         free(formatted_msg);
         end_log_process();
         va_end(args);
         pthread_mutex_unlock(&logger_mutex);
-        return PIPE_WRITING_ERROR;
+        ERROR_HANDLER(1, EXIT_PIPE_ERROR, "Error occurred during writing to pipe");
     }
 
     free(formatted_msg);

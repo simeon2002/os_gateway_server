@@ -16,45 +16,24 @@
 #include "logger.h"
 
 #ifndef RUNNING_AVG_LENGTH
+/*Macro determines the length of the nb of last sensor values from which the average will be calculated.*/
 #define RUNNING_AVG_LENGTH 5
 #endif
 
 #ifndef SET_MAX_TEMP
+/*MAX temperature after which correction is necessary*/
 #error SET_MAX_TEMP not set
 #endif
 
 #ifndef SET_MIN_TEMP
+/*MIN temperature after which correction is necessary*/
 #error SET_MIN_TEMP not set
 #endif
-
-#ifndef EXIT_OUT_OF_MEMORY
-#define EXIT_OUT_OF_MEMORY 1
-#endif
-
-#ifndef EXIT_FILE_ERROR
-#define EXIT_FILE_ERROR 2
-#endif
-
-
-/*
- * ERROR_HANDLER() for handling memory allocation problems, invalid sensor IDs, non-existing files, etc.
- */
-#define ERROR_HANDLER(condition, exit_status, ...)    do {                       \
-                      if (condition) {                              \
-                        printf("\nError: in %s - function %s at line %d: %s\n", __FILE__, __func__, __LINE__, __VA_ARGS__); \
-                        exit(exit_status);                         \
-                      }                                             \
-                    } while(0)
 
 /* defintion of the 3 user-defined functions. */
 void *element_copy(void *element);
 void element_free(void **element);
 int element_compare(void *x, void *y);
-
-void parse_temp_reading_and_ts(FILE *fp_data);
-
-
-void datamgr_parse_sensor_files(FILE *fp_sensor_map, FILE *fp_sensor_data);
 
 /**
  * This method should be called to clean up the datamgr, and to free all used memory.
@@ -103,20 +82,24 @@ void datamgr_avg_temp_logging(int room_id, int sensor_id, sensor_value_t avg_tem
 /**
  *  This method holds the core functionality of datamgr. It takes in a senser data element pointer and uses it to update
  *  the corresponding sensor node data.
+ *  Uses ERROR_HANDLER() to deal with errors as well as appropriate messages will be logger if no error occurred.
  *  \param sensor_data sensor data struct containing id of sensor and more.
  */
 void datamgr_update_sensor_data(sensor_data_t *sensor_data);
 
 /**
  *  This method takes in 1 file pointer to the sensor_room mappings file and parses it.
- *  The method places the correspondings room id and sensor mappings into the list pointer.
+ *  The method places the corresponding room id and sensor mappings into the list pointer.
+ *  Uses ERROR_HANDLER() to deal with errors.
  *  \param fp_sensor_map file pointer to the map file
  */
 void datamgr_parse_sensor_mapping(FILE *fp_sensor_map);
 
 /**
  *  Return boolean value based on whether sensor id of the sensor data is in sensor list or not.
- *  \return false if sensor valid, true if sensor is invalid
+ *  Uses ERROR_HANDLER() to deal with errors.
+ *  \param sensor_id sensor id of sensor data.
+ *  \return false if sensor valid, true if sensor is invalid or exits with appropriate status code if error occurred
  */
 bool datamgr_is_invalid_sensor(sensor_id_t sensor_id);
 

@@ -26,22 +26,19 @@ sbuffer_t *shared_buffer;
 
 int sbuffer_init(sbuffer_t **buffer) {
     if (sem_init(&buffer_count, 0, 0) != 0) {
-        perror("buffer_count semaphore cannot be created");
-        return SBUFFER_FAILURE;
+        ERROR_HANDLER(1, EXIT_MUTEX_ERROR, "Error semaphore cannot be created.");
     }
     if (sem_init(&rw_mutex, 0, 1) != 0) {
-        perror("rw_mutex semaphore cannot be created");
-        return SBUFFER_FAILURE;
+        ERROR_HANDLER(1, EXIT_MUTEX_ERROR, "Error semaphore cannot be created.");
     }
 
     if (sem_init(&reader_mutex, 0, 1) != 0) {
-        perror("rw_mutex semaphore cannot be created");
-        return SBUFFER_FAILURE;
+        ERROR_HANDLER(1, EXIT_MUTEX_ERROR, "Error semaphore cannot be created.");
     }
 
-
     *buffer = malloc(sizeof(sbuffer_t));
-    if (*buffer == NULL) return SBUFFER_FAILURE;
+    ERROR_HANDLER(buffer == NULL, EXIT_MEMORY_ALLOCATION_ERROR, "Error memory couldn't be allocated.");
+//    if (*buffer == NULL) return SBUFFER_FAILURE;
     (*buffer)->head = NULL;
     (*buffer)->tail = NULL;
     return SBUFFER_SUCCESS;
@@ -50,7 +47,7 @@ int sbuffer_init(sbuffer_t **buffer) {
 int sbuffer_free(sbuffer_t **buffer) {
     sbuffer_node_t *dummy;
     if ((buffer == NULL) || (*buffer == NULL)) {
-        return SBUFFER_FAILURE;
+        ERROR_HANDLER(1, SBUFFER_FAILURE, "Error buffer is empty or pointer points to nothing.");
     }
     while ((*buffer)->head) {
         dummy = (*buffer)->head;
@@ -59,11 +56,16 @@ int sbuffer_free(sbuffer_t **buffer) {
     }
     free(*buffer);
     *buffer = NULL;
+
     if (sem_destroy(&rw_mutex) != 0) {
-        perror("rw_mutex semaphore cannot be destroyed");
+        ERROR_HANDLER(1, EXIT_MUTEX_ERROR, "Error semaphore cannot be destroyed.");
     }
     if (sem_destroy(&buffer_count) != 0) {
-        perror("buffer_count semaphore cannot be destroyed");
+        ERROR_HANDLER(1, EXIT_MUTEX_ERROR, "Error semaphore cannot be destroyed.");
+
+    }
+    if (sem_destroy(&reader_mutex) != 0) {
+        ERROR_HANDLER(1, EXIT_MUTEX_ERROR, "Error semaphore cannot be destroyed.");
     }
     return SBUFFER_SUCCESS;
 }
@@ -73,7 +75,7 @@ int sbuffer_remove(sbuffer_t *buffer, sensor_data_t *data, bool is_datamgr) {
     sbuffer_node_t *dummy;
     // failure case
     if (buffer == NULL) return SBUFFER_FAILURE;
-    if ( buffer->head == NULL) return SBUFFER_NO_MATCH;
+    if ( buffer->head == NULL) return SBUFFER_NO_DATA;
 
     if (sem_wait(&buffer_count) != 0){ // waits to get something in the buffer.
         perror("Error occurred during waiting for counting semaphore");
@@ -106,7 +108,7 @@ int sbuffer_remove(sbuffer_t *buffer, sensor_data_t *data, bool is_datamgr) {
             sem_post(&reader_mutex);
             sem_post(&rw_mutex);
             free(dummy);
-            return SBUFFER_NO_DATA;
+            return SBUFFER_END;
         }
         free(dummy);
     }

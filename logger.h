@@ -17,48 +17,37 @@
 #include <string.h>
 #include <time.h>
 #include <pthread.h>
+#include <stdarg.h>
+#include "config.h"
 
 #define BUFFER_SIZE 1000
 #define LOG_FILE "gateway.log"
 
-// status codes
-#define FILE_OPENING_ERROR 1
-#define FORK_FAILURE 2
-#define LOG_WRITING_ERROR 3
-#define FILE_CLOSING_ERROR 4
-#define PIPE_CREATION_FAILURE 5
-#define PIPE_READING_ERROR 6
-#define PIPE_WRITING_ERROR 7
-#define MUTEX_ERROR 8
-#define MEMORY_ALLOCATION_ERROR 9
-
-/*
- * Use ERROR_HANDLER() for handling memory allocation problems, invalid sensor IDs, non-existing files, etc.
- */
-#ifndef ERROR_HANDLER
-#define ERROR_HANDLER(condition, exit_status, ...)    do {                       \
-                      if (condition) {                              \
-                        printf("\nError: in %s - function %s at line %d: %s\n", __FILE__, __func__, __LINE__, __VA_ARGS__); \
-                        exit(exit_status);                         \
-                      }                                             \
-                    } while(0)
+#ifndef LOG_MESSAGE
+#define LOG_MESSAGE(...) write_to_log_process(__VA_ARGS__)
 #endif
+
+
 /**
- * \brief Write a message to the log process.
- * \param msg The message to be written.
- * \return Status code.
+ * \brief Write a FORMATTED message to the log process.
+ * Uses ERROR_HANDLER() to deal with errors.
+ * \param format formatted message to be written.
+ * \param arguments for the format specifiers
+ * \return EXIT_SUCCESS on success and exits with status code on errors
  */
 int write_to_log_process(const char* format, ...);
 
 /**
  * \brief Create the log process.
- * \return Status code.
+ * Uses ERROR_HANDLER to deal with errors.
+ * \return EXIT_SUCCESS on success and exits with status code on errors
  */
 int create_log_process();
 
 /**
  * \brief End the log process.
- * \return Status code.
+ * Uses ERROR_HANDLER() to deal with errors.
+ * \return EXIT_SUCCESS on success and exits with status code on errors
  */
 int end_log_process();
 

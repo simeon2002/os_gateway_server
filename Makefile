@@ -6,22 +6,23 @@ all: sensor_gateway sensor_node file_creator
 
 # When trying to compile one of the executables, first look for its .c files
 # Then check if the libraries are in the lib folder
-sensor_gateway : main.c connmgr.c datamgr.c sensor_db.c sbuffer.c lib/libdplist.so lib/libtcpsock.so
+sensor_gateway : main.c connmgr.c datamgr.c sensor_db.c sbuffer.c lib/libdplist.so lib/libtcpsock.so logger.c
 	@echo "$(TITLE_COLOR)\n***** COMPILING sensor_gateway *****$(NO_COLOR)"
 	gcc -c main.c      -Wall -std=c11 -Werror -DSET_MIN_TEMP=10 -DSET_MAX_TEMP=20 -DTIMEOUT=5 -o main.o      -fdiagnostics-color=auto
 	gcc -c connmgr.c   -Wall -std=c11 -Werror -DSET_MIN_TEMP=10 -DSET_MAX_TEMP=20 -DTIMEOUT=5 -o connmgr.o   -fdiagnostics-color=auto
 	gcc -c datamgr.c   -Wall -std=c11 -Werror -DSET_MIN_TEMP=10 -DSET_MAX_TEMP=20 -DTIMEOUT=5 -o datamgr.o   -fdiagnostics-color=auto
 	gcc -c sensor_db.c -Wall -std=c11 -Werror -DSET_MIN_TEMP=10 -DSET_MAX_TEMP=20 -DTIMEOUT=5 -o sensor_db.o -fdiagnostics-color=auto
 	gcc -c sbuffer.c   -Wall -std=c11 -Werror -DSET_MIN_TEMP=10 -DSET_MAX_TEMP=20 -DTIMEOUT=5 -o sbuffer.o   -fdiagnostics-color=auto
+	gcc -c logger.c   -Wall -std=c11 -Werror -DSET_MIN_TEMP=10 -DSET_MAX_TEMP=20 -DTIMEOUT=5 -o logger.o   -fdiagnostics-color=auto
 	@echo "$(TITLE_COLOR)\n***** LINKING sensor_gateway *****$(NO_COLOR)"
-	gcc main.o connmgr.o datamgr.o sensor_db.o sbuffer.o -ldplist -ltcpsock -lpthread -o sensor_gateway -Wall -L./lib -Wl,-rpath=./lib -fdiagnostics-color=auto
+	gcc main.o connmgr.o datamgr.o logger.o sensor_db.o sbuffer.o -ldplist -ltcpsock -lpthread -o sensor_gateway -Wall -L./lib -Wl,-rpath=./lib -fdiagnostics-color=auto
 
 #target for a quick build of your source code.
 sensor_gateway_quick :
-	gcc -w -o sensor_gateway main.c connmgr.c datamgr.c sensor_db.c sbuffer.c lib/dplist.c lib/tcpsock.c -DSET_MIN_TEMP=10 -DSET_MAX_TEMP=20 -DTIMEOUT=5 -lpthread 
+	gcc -w -o sensor_gateway main.c connmgr.c datamgr.c logger.c sensor_db.c sbuffer.c lib/dplist.c lib/tcpsock.c -DSET_MIN_TEMP=10 -DSET_MAX_TEMP=20 -DTIMEOUT=100 -lpthread
 		
 sensor_gateway_debug :
-	gcc -g -w -o sensor_gateway main.c connmgr.c datamgr.c sensor_db.c sbuffer.c lib/dplist.c lib/tcpsock.c -DSET_MIN_TEMP=10 -DSET_MAX_TEMP=20 -DTIMEOUT=5 -lpthread 
+	gcc -g -w -o sensor_gateway main.c connmgr.c datamgr.c logger.c sensor_db.c sbuffer.c lib/dplist.c lib/tcpsock.c -DSET_MIN_TEMP=10 -DSET_MAX_TEMP=20 -DTIMEOUT=100 -lpthread
 
 #file_creator program to generate a room map	
 file_creator : file_creator.c
@@ -29,11 +30,11 @@ file_creator : file_creator.c
 	gcc file_creator.c -o file_creator -Wall -fdiagnostics-color=auto
 
 #test client
-sensor_node1 : sensor_node.c lib/libtcpsock.so
+sensor_node : sensor_node.c lib/libtcpsock.so
 	@echo "$(TITLE_COLOR)\n***** COMPILING sensor_node *****$(NO_COLOR)"
-	gcc -c sensor_node.c -DLOOPS=10 -Wall -std=c11 -Werror -o sensor_node1.o -fdiagnostics-color=auto
+	gcc -c sensor_node.c -DLOOPS=10 -Wall -std=c11 -Werror -o sensor_node.o -fdiagnostics-color=auto
 	@echo "$(TITLE_COLOR)\n***** LINKING sensor_node *****$(NO_COLOR)"
-	gcc sensor_node1.o -ltcpsock -o sensor_node1 -Wall -L./lib -Wl,-rpath=./lib -fdiagnostics-color=auto
+	gcc sensor_node.o -ltcpsock -o sensor_node -Wall -L./lib -Wl,-rpath=./lib -fdiagnostics-color=auto
 
 sensor_node2 : sensor_node.c lib/libtcpsock.so
 	@echo "$(TITLE_COLOR)\n***** COMPILING sensor_node *****$(NO_COLOR)"
@@ -70,7 +71,7 @@ clean:
 	rm -rf *.o sensor_gateway sensor_node file_creator *~
 
 clean-all: clean
-	rm -rf lib/*.so
+	rm -rf lib/*.so gateway.log data.csv cmgr_test main
 
 run : sensor_gateway sensor_node
 	@echo "Add your own implementation here..."
@@ -80,22 +81,22 @@ zip:
 
 #connection manager makes
 run_connectionmgr: lib/libtcpsock.so
-	gcc -g -Wall -std=c11 -Werror lib/tcpsock.c lib/dplist.c connection_mgr.c main.c sbuffer.c logger.c data_mgr.c sensor_db.c -o cmgr_test -DTIMEOUT=10 -DSET_MIN_TEMP=10 -DSET_MAX_TEMP=20.5 -lpthread
+	gcc -g -Wall -std=c11 -Werror lib/tcpsock.c lib/dplist.c connmgr.c main.c sbuffer.c logger.c datamgr.c sensor_db.c -o cmgr_test -DTIMEOUT=10 -DSET_MIN_TEMP=10 -DSET_MAX_TEMP=20.5 -lpthread
 
 run_server: run_connectionmgr
 	./cmgr_test 5678 1
 
-run_client1: sensor_node1
-	./sensor_node1 15 1 127.0.0.1 5678
+run_client1: sensor_node
+	./sensor_node 15 1 127.0.0.1 5678
 
-run_client2: sensor_node1
-	./sensor_node1 21 1 127.0.0.1 5678
+run_client2: sensor_node
+	./sensor_node 21 3 127.0.0.1 5678
 
-run_client3: sensor_node1
-	./sensor_node1 37 1 127.0.0.1 5678
+run_client3: sensor_node
+	./sensor_node 37 2 127.0.0.1 5678
 
-run_client4: sensor_node1
-	./sensor_node1 49 1 127.0.0.1 5678
+run_client4: sensor_node
+	./sensor_node 49 1 127.0.0.1 5678
 
-run_client5: sensor_node1
-	./sensor_node1 112 2 127.0.0.1 5678
+run_client5: sensor_node
+	./sensor_node 112 2 127.0.0.1 5678

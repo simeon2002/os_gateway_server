@@ -10,38 +10,31 @@ FILE* storagemgr_open_db(char *filename, bool append) {
     }
     // Error handling for file opening
     if (fp == NULL) {
-        write_to_log_process("ERROR: could not open db file.");
-        perror("Error occurred during file opening");
-        exit(FILE_OPENING_ERROR);
+        ERROR_HANDLER(1, EXIT_FILE_ERROR, "Error: could not open db file.");
     }
 
     // Communicate with the log process
-    write_to_log_process("New DB file %s has been created.", filename);
+    LOG_MESSAGE("New DB file %s has been created.", filename);
     return fp;
 }
 
 
 int storagemgr_insert_sensor(FILE * f, sensor_id_t id, sensor_value_t value, sensor_ts_t ts) {
     if (fprintf(f, "%d, %lf, %ld \n", id, value, ts) < 0) {
-        write_to_log_process("ERROR: could not write to DB file.");
-        perror("Error writing to file");
         fclose(f);
-        return SENSOR_DB_WRITE_ERROR;
+        ERROR_HANDLER(1, EXIT_FILE_ERROR, "Error could not write to DB file.");
     }
     fflush(f);
-//    printf("this is the parent process during insertion of data \n");
     // Communicate with the log process
-    write_to_log_process("Data insertion from sensor %d.", id);
-    return 0;
+    LOG_MESSAGE("Data insertion from sensor %d.", id);
+    return EXIT_SUCCESS;
 }
 
 int storagemgr_close_db(FILE * f, char *filename) {
     if ( fclose(f) == EOF) {
-        write_to_log_process("ERROR: could not close DB file %s.", filename);
-        perror("Error closing file");
-        return FILE_CLOSING_ERROR;
+        ERROR_HANDLER(1, EXIT_FILE_ERROR, "Error: could not close DB file.");
     };
     // Communicate with the log process
-    write_to_log_process("The %s DB file has been closed.", filename);
-    return 0;
+    LOG_MESSAGE("The %s DB file has been closed.", filename);
+    return EXIT_SUCCESS;
 }
