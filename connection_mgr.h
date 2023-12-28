@@ -17,6 +17,7 @@
 
 #define EXIT_TCP_ERROR 1
 #define EXIT_THREAD_ERROR 2
+#define EXIT_CMD_ARGS_ERROR 3
 #ifndef TIMEOUT
 #define TIMEOUT 20
 #endif

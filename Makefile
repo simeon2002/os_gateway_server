@@ -31,7 +31,7 @@ file_creator : file_creator.c
 #test client
 sensor_node1 : sensor_node.c lib/libtcpsock.so
 	@echo "$(TITLE_COLOR)\n***** COMPILING sensor_node *****$(NO_COLOR)"
-	gcc -c sensor_node.c -DLOOPS=4 -Wall -std=c11 -Werror -o sensor_node1.o -fdiagnostics-color=auto
+	gcc -c sensor_node.c -DLOOPS=10 -Wall -std=c11 -Werror -o sensor_node1.o -fdiagnostics-color=auto
 	@echo "$(TITLE_COLOR)\n***** LINKING sensor_node *****$(NO_COLOR)"
 	gcc sensor_node1.o -ltcpsock -o sensor_node1 -Wall -L./lib -Wl,-rpath=./lib -fdiagnostics-color=auto
 
@@ -91,8 +91,8 @@ run_client1: sensor_node1
 run_client2: sensor_node1
 	./sensor_node1 21 1 127.0.0.1 5678
 
-run_client3: sensor_node3
-	./sensor_node1 37 .11 127.0.0.1 5678
+run_client3: sensor_node1
+	./sensor_node1 37 1 127.0.0.1 5678
 
 run_client4: sensor_node1
 	./sensor_node1 49 1 127.0.0.1 5678

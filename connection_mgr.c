@@ -98,7 +98,8 @@ int cmgr_start_server(int argc, char *argv[]) {
         tcpsock_t *server, *client;
         if(argc < 3) {
             printf("Please provide the right arguments: first the port, then the max nb of clients");
-            return -1;
+            write_to_log_process("ERROR, provide correct cmd args, first port then max nb of clients.");
+            exit(EXIT_CMD_ARGS_ERROR);
         }
     MAX_CONN = atoi(argv[2]); // use stroi
     int PORT = atoi(argv[1]);
