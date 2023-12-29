@@ -13,7 +13,6 @@
 #include <inttypes.h>
 #include <unistd.h>
 #include <sys/stat.h>
-#include "logger.h"
 
 #ifndef RUNNING_AVG_LENGTH
 /*Macro determines the length of the nb of last sensor values from which the average will be calculated.*/

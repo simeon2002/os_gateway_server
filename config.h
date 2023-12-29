@@ -5,11 +5,16 @@
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
 #include <time.h>
 #include <stdbool.h>
-#include <stdio.h>
-#include "logger.h"
+#include <unistd.h>
+#include <sys/wait.h>
+#include <string.h>
+#include <pthread.h>
+#include <stdarg.h>
 
 // DEFINITION ERROR CODES
 
@@ -42,10 +47,14 @@
                     exit(exit_status);                                           \
                       }                                             \
                     } while(0)
-#endif
 
+/**
+ * \brief definitions sensor_data structs
+ */
+#endif
 typedef uint16_t sensor_id_t;
 typedef double sensor_value_t;
+
 typedef time_t sensor_ts_t;         // UTC timestamp as returned by time() - notice that the size of time_t is different on 32/64 bit machine
 
 /**
@@ -56,5 +65,48 @@ typedef struct {
     sensor_ts_t ts;
     bool is_datamgr;            /** a boolean detecting for which manager it is destined*/
 } sensor_data_t;
+
+/**
+ * \brief definitions logger module
+ */
+
+#ifndef LOG_MESSAGE
+/**
+ * Use LOG_MESSAGE() te log messages to log file. It will put a the *formatted* message into the log file. together with a
+ * timestamp as well a unique sequenced number.
+ * \param ... formatted message form and variables for the message if any
+ * */
+#define LOG_MESSAGE(...) write_to_log_process(__VA_ARGS__)
+#endif
+
+
+#define BUFFER_SIZE 1000
+
+#define LOG_FILE "gateway.log"
+
+
+/**
+ * \brief Write a FORMATTED message to the log process.
+ * Uses ERROR_HANDLER() to deal with errors.
+ * \param format formatted message to be written.
+ * \param arguments for the format specifiers
+ * \return EXIT_SUCCESS on success and exits with status code on errors
+ */
+int write_to_log_process(const char* format, ...);
+
+/**
+ * \brief Create the log process.
+ * Uses ERROR_HANDLER to deal with errors.
+ * \return EXIT_SUCCESS on success and exits with status code on errors
+ */
+int create_log_process();
+
+/**
+ * \brief End the log process.
+ * Uses ERROR_HANDLER() to deal with errors.
+ * \return EXIT_SUCCESS on success and exits with status code on errors
+ */
+int end_log_process();
+
 
 #endif /* _CONFIG_H_ */

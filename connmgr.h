@@ -9,7 +9,6 @@
 #include "lib/tcpsock.h"
 #include "sbuffer.h"
 #include <unistd.h>
-#include "logger.h"
 #include <time.h>
 #include <signal.h>
 #include "datamgr.h"

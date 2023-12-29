@@ -10,7 +10,6 @@
 #include <unistd.h>
 #include <stdbool.h>
 #include "config.h"
-#include "logger.h"
 
 /*storage manager functions*/
 
